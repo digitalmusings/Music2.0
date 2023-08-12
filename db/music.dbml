@@ -1,0 +1,299 @@
+Table submission {
+  submission_id int [pk, increment]
+  participant_id int [not null, ref: > participant.participant_id]
+  bracket_id int [not null, ref: > bracket.bracket_id]
+  song_id int [not null, ref: > song.song_id]
+  order int [not null]
+  date_submitted timestamp [not null, default:`now()`]
+  active bool_int [not null]
+  is_dupe bool_int [not null]
+  title text [not null]
+  version text [null]
+  artist text [null]
+  collaborators text [null]
+  composer text [null]
+  link text [not null]
+  genre text [null]
+  emoji text [null]
+  comments text [null]
+
+  indexes {
+    (participant_id, bracket_id, song_id) [unique]
+  }
+}
+
+Table submission_history {
+  submission_history_id int [pk, increment]
+  date_update timestamp [not null]
+  note_update text [not null, Note: 'dupe ineligible withdrawn "play-in loser"' ]
+  submission_id int [not null, ref: > submission.submission_id]
+  participant_id int [not null, ref: > participant.participant_id]
+  bracket_id int [not null, ref: > bracket.bracket_id]
+  song_id int [not null, ref: > song.song_id]
+  order int [not null]
+  date_submitted timestamp [not null, default:`now()`]
+  active bool_int [not null]
+  is_dupe bool_int [not null]
+  title text [not null]
+  version text [null]
+  artist text [null]
+  collaborators text [null]
+  composer text [null]
+  link text [not null]
+  genre text [null]
+  emoji text [null]
+  comments text [null]
+
+  indexes {
+    submission_id
+    participant_id
+    bracket_id
+    song_id
+  }
+
+  Note: 'composite unique index on submission_id, date_function (https://stackoverflow.com/a/26304364/2506158)'
+}
+
+Table link_relation {
+  link_realtion_id int [pk, increment]
+  relation_id int [not null]
+  link_id int [not null, ref: > link.link_id]
+  type_link text [not null, Note: 'submission song seed' ]
+
+  indexes {
+    relation_id
+  }
+}
+
+Table link {
+  link_id int [pk, increment]
+  url text [not null]
+  region text[] [null, Note: 'US Canada Japan Australia Europe Asia "North America" "South America" Africa Worldwide' ]
+}
+
+Table song {
+  song_id int [pk, increment]
+  title text [not null]
+  title_english text [null]
+  version text [null]
+  artist text [not null, Note: 'CALCULATED']
+  collaborators text [null, Note: 'CALCULATED']
+  composer text [null]
+  year_min int [null]
+  year_max int [null]
+
+  indexes {
+    (title, version, artist, collaborators) [unique]
+  }
+}
+
+Table song_relation {
+  song_relation_id int [pk,increment]
+  song_from_id int [not null]
+  song_to_id int [not null]
+  relation_type text [not null, Note: 'cover live' ]
+}
+
+Table song_artist {
+  song_artist_id int [pk, increment]
+  song_id int [not null, ref: > song.song_id]
+  artist_id int [not null, ref: > artist.artist_id]
+  credit_type text [not null, Note: 'primary collaborator original remixer composer' ]
+
+  indexes {
+    (song_id, artist_id) [unique]
+  }
+}
+
+Table artist {
+  artist_id int [pk, increment]
+  name text [not null]
+  year_min int [null]
+  year_max int [null]
+  primary_artist_id int [null, ref: > artist.artist_id]
+}
+
+Table artist_genre {
+  artist_genre_id int [pk, increment]
+  artist_id int [not null, ref: > artist.artist_id]
+  genre_id int [not null, ref: > genre.genre_id]
+}
+
+Table participant {
+  participant_id int [pk, increment]
+  username text [unique, not null]
+  nickname text [null, Note: 'CALCULATED']
+  date_joined timestamp [not null, default:`now()`]
+  time_zone text [null]
+  active bool_int [not null]
+}
+
+Table participant_nickname {
+  participant_nickname_id int [pk, increment]
+  participant_id int [not null, ref: > participant.participant_id]
+  nickname text [not null]
+  date_start date [not null]
+  date_end date [null]
+
+  indexes {
+    participant_id
+  }
+  
+  Note: 'composite unique index on participant_id, date_function'
+}
+
+Table genre {
+  genre_id int [pk, increment]
+  name text [not null, unique]
+  parent_id text [null, ref: > genre.genre_id]
+
+  indexes {
+    parent_id
+  }
+}
+
+Table song_genre {
+  song_genre_id int [pk, increment]
+  song_id int [not null, ref: > song.song_id]
+  genre_id int [not null, ref: > genre.genre_id]
+
+  indexes {
+    (song_id, genre_id) [unique]
+  }
+}
+
+Table bracket {
+  bracket_id int [pk, increment]
+  epoch int
+  cycle int
+  name text
+  type text [not null, Note: 'year theme aggregate' ]
+  year_min int [null]
+  year_max int [null]
+  order int [not null]
+  size text [not null, Note: '128 96 64 48 32' ]
+  date_start timestamp [null]
+  date_end timestamp [null]
+  discord_message_id text
+}
+
+Table project {
+  project_id int [pk, increment]
+  name text [unique]
+  project_lead_id int [null, ref: > participant.participant_id]
+}
+
+Table bracket_selection {
+  bracket_selection_id int [pk, increment]
+  project_id int [not null, ref: > project.project_id]
+  epoch int [not null] 
+  cycle int [not null]
+  bracket_id int [not null, ref: > bracket.bracket_id]
+  date_selected timestamp [not null]
+}
+
+Table seed {
+  seed_id int [pk, increment]
+  bracket_id int [not null, ref: > bracket.bracket_id]
+  seed int [not null]
+  submission_id int [not null, ref: > submission.submission_id]
+  emoji text [null]
+
+  indexes {
+    (bracket_id, seed) [unique]
+    submission_id
+  }
+}
+
+Table seed_history {
+  seed_history_id int [pk, increment]
+  date_changed timestamp [not null]
+  reason_changed text [not null, Note: '"missed dupe" ineligible' ]
+  seed_id int [not null, ref: > seed.seed_id]
+  submission_id int [not null, ref: > submission.submission_id]
+  emoji text [null]
+  
+  indexes {
+    seed_id
+    submission_id
+  }
+}
+
+Table round {
+  round_id int [pk, increment]
+  bracket_id int [not null, ref: > bracket.bracket_id]
+  name text [not null, Note: 'Finals "Third Place" "Semi-Finals" "Quarter-Finals" "Round of 16" "Round of 32" "Round of 64" "Round of 128" "Play-Ins"']
+  size int [not null, Note: '0 means play-in round']
+  index_asc int [not null, Note: '0-indexed from Play-Ins']
+  index_desc int [not null, Note: '0-indexed from finals']
+  date_start timestamp [not null]
+  date_end timestamp [null]
+  discord_message_id text
+
+  Indexes {
+    bracket_id
+  }
+}
+
+/*                 0idx   128/96  64/48   32
+  Finals            0        8      7      6
+  "Third Place"     1        7      6      5
+  "Semi-Finals"     2        6      5      4
+  "Quarter-Finals"  3        5      4      3
+  "Round of 16"     4        4      3      2
+  "Round of 32"     5        3      2      1
+  "Round of 64"     6        2      1      
+  "Round of 128"    7        1             
+  "Play-Ins"        8/7/6    0      0      0
+*/
+
+Table match {
+  match_id int [pk, increment]
+  round_id int [not null, ref: > round.round_id]
+  index int [not null]
+  date_posted timestamp [not null]
+  tie text [Note: '0 (no), 1 (broken), 2 (kept)' ]
+  winner_id int [null, ref: > submission.submission_id]
+  date_cancelled timestamp [null]
+  reason_cancelled text [null, Note: '"ineligible sub0" "ineligible sub1" "administrative error"' ]
+  next_match_id int [null, ref: > match.match_id]
+  discord_message_id text
+
+  Indexes {
+    round_id
+  }
+}
+
+Table match_seed {
+  match_seed_id int [pk, increment]
+  match_id int [not null, ref: > match.match_id]
+  seed_id int [not null, ref: > seed.seed_id]
+  index int [not null]
+  votes int [null]
+  voters text[] [null]
+  previous_match_id int [null, ref: > match.match_id]
+}
+
+Table notifications {
+  notification_id int [pk, increment]
+  participant_id int [not null, ref: > participant.participant_id]
+  submission_id int [null, ref: > submission.submission_id]
+  date_first_attempt timestamp [not null]
+  date_succeded timestamp [null]
+  type text [not null, Note: '"need replacement" "no replacement" "tie"' ]
+  discord_message_id text
+}
+
+Table config {
+  project_id int [pk, not null, ref: > project.project_id]
+  key text [pk]
+  value text
+}
+
+Table seed_order {
+  seed_order_id int [pk, increment]
+  bracket_size int [not null]
+  order int[] [not null]
+
+  Note: 'see spreadsheet for orders'
+}
