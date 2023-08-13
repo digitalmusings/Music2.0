@@ -1,5 +1,5 @@
 Table submission {
-  submission_id int [pk, increment]
+  submission_id uuid [pk, default: `gen_random_uuid()`]
   participant_id int [not null, ref: > participant.participant_id]
   bracket_id int [not null, ref: > bracket.bracket_id]
   song_id int [not null, ref: > song.song_id]
@@ -23,7 +23,7 @@ Table submission {
 }
 
 Table submission_history {
-  submission_history_id int [pk, increment]
+  submission_history_id uuid [pk, default: `gen_random_uuid()`]
   date_update timestamp [not null]
   note_update text [not null, Note: 'dupe ineligible withdrawn "play-in loser"' ]
   submission_id int [not null, ref: > submission.submission_id]
@@ -55,7 +55,7 @@ Table submission_history {
 }
 
 Table link_relation {
-  link_realtion_id int [pk, increment]
+  link_realtion_id uuid [pk, default: `gen_random_uuid()`]
   relation_id int [not null]
   link_id int [not null, ref: > link.link_id]
   type_link text [not null, Note: 'submission song seed' ]
@@ -66,13 +66,13 @@ Table link_relation {
 }
 
 Table link {
-  link_id int [pk, increment]
+  link_id uuid [pk, default: `gen_random_uuid()`]
   url text [not null]
   region text[] [null, Note: 'US Canada Japan Australia Europe Asia "North America" "South America" Africa Worldwide' ]
 }
 
 Table song {
-  song_id int [pk, increment]
+  song_id uuid [pk, default: `gen_random_uuid()`]
   title text [not null]
   title_english text [null]
   version text [null]
@@ -95,7 +95,7 @@ Table song_relation {
 }
 
 Table song_artist {
-  song_artist_id int [pk, increment]
+  song_artist_id uuid [pk, default: `gen_random_uuid()`]
   song_id int [not null, ref: > song.song_id]
   artist_id int [not null, ref: > artist.artist_id]
   credit_type text [not null, Note: 'primary collaborator original remixer composer' ]
@@ -106,7 +106,7 @@ Table song_artist {
 }
 
 Table artist {
-  artist_id int [pk, increment]
+  artist_id uuid [pk, default: `gen_random_uuid()`]
   name text [not null]
   year_min int [null]
   year_max int [null]
@@ -114,13 +114,13 @@ Table artist {
 }
 
 Table artist_genre {
-  artist_genre_id int [pk, increment]
+  artist_genre_id uuid [pk, default: `gen_random_uuid()`]
   artist_id int [not null, ref: > artist.artist_id]
   genre_id int [not null, ref: > genre.genre_id]
 }
 
 Table participant {
-  participant_id int [pk, increment]
+  participant_id uuid [pk, default: `gen_random_uuid()`]
   username text [unique, not null]
   nickname text [null, Note: 'CALCULATED']
   date_joined timestamp [not null, default:`now()`]
@@ -129,7 +129,7 @@ Table participant {
 }
 
 Table participant_nickname {
-  participant_nickname_id int [pk, increment]
+  participant_nickname_id uuid [pk, default: `gen_random_uuid()`]
   participant_id int [not null, ref: > participant.participant_id]
   nickname text [not null]
   date_start date [not null]
@@ -143,7 +143,7 @@ Table participant_nickname {
 }
 
 Table genre {
-  genre_id int [pk, increment]
+  genre_id uuid [pk, default: `gen_random_uuid()`]
   name text [not null, unique]
   parent_id text [null, ref: > genre.genre_id]
 
@@ -153,7 +153,7 @@ Table genre {
 }
 
 Table song_genre {
-  song_genre_id int [pk, increment]
+  song_genre_id uuid [pk, default: `gen_random_uuid()`]
   song_id int [not null, ref: > song.song_id]
   genre_id int [not null, ref: > genre.genre_id]
 
@@ -163,7 +163,7 @@ Table song_genre {
 }
 
 Table bracket {
-  bracket_id int [pk, increment]
+  bracket_id uuid [pk, default: `gen_random_uuid()`]
   epoch int
   cycle int
   name text
@@ -178,13 +178,13 @@ Table bracket {
 }
 
 Table project {
-  project_id int [pk, increment]
+  project_id uuid [pk, default: `gen_random_uuid()`]
   name text [unique]
   project_lead_id int [null, ref: > participant.participant_id]
 }
 
 Table bracket_selection {
-  bracket_selection_id int [pk, increment]
+  bracket_selection_id uuid [pk, default: `gen_random_uuid()`]
   project_id int [not null, ref: > project.project_id]
   epoch int [not null] 
   cycle int [not null]
@@ -193,7 +193,7 @@ Table bracket_selection {
 }
 
 Table seed {
-  seed_id int [pk, increment]
+  seed_id uuid [pk, default: `gen_random_uuid()`]
   bracket_id int [not null, ref: > bracket.bracket_id]
   seed int [not null]
   submission_id int [not null, ref: > submission.submission_id]
@@ -206,7 +206,7 @@ Table seed {
 }
 
 Table seed_history {
-  seed_history_id int [pk, increment]
+  seed_history_id uuid [pk, default: `gen_random_uuid()`]
   date_changed timestamp [not null]
   reason_changed text [not null, Note: '"missed dupe" ineligible' ]
   seed_id int [not null, ref: > seed.seed_id]
@@ -220,7 +220,7 @@ Table seed_history {
 }
 
 Table round {
-  round_id int [pk, increment]
+  round_id uuid [pk, default: `gen_random_uuid()`]
   bracket_id int [not null, ref: > bracket.bracket_id]
   name text [not null, Note: 'Finals "Third Place" "Semi-Finals" "Quarter-Finals" "Round of 16" "Round of 32" "Round of 64" "Round of 128" "Play-Ins"']
   size int [not null, Note: '0 means play-in round']
@@ -248,7 +248,7 @@ Table round {
 */
 
 Table match {
-  match_id int [pk, increment]
+  match_id uuid [pk, default: `gen_random_uuid()`]
   round_id int [not null, ref: > round.round_id]
   index int [not null]
   date_posted timestamp [not null]
@@ -265,7 +265,7 @@ Table match {
 }
 
 Table match_seed {
-  match_seed_id int [pk, increment]
+  match_seed_id uuid [pk, default: `gen_random_uuid()`]
   match_id int [not null, ref: > match.match_id]
   seed_id int [not null, ref: > seed.seed_id]
   index int [not null]
@@ -275,7 +275,7 @@ Table match_seed {
 }
 
 Table notifications {
-  notification_id int [pk, increment]
+  notification_id uuid [pk, default: `gen_random_uuid()`]
   participant_id int [not null, ref: > participant.participant_id]
   submission_id int [null, ref: > submission.submission_id]
   date_first_attempt timestamp [not null]
@@ -291,7 +291,7 @@ Table config {
 }
 
 Table seed_order {
-  seed_order_id int [pk, increment]
+  seed_order_id uuid [pk, default: `gen_random_uuid()`]
   bracket_size int [not null]
   order int[] [not null]
 
