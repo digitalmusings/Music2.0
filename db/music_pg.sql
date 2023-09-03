@@ -42,7 +42,7 @@ CREATE TABLE "submission_history" (
 );
 
 CREATE TABLE "link_relation" (
-  "link_realtion_id" uuid PRIMARY KEY DEFAULT (gen_random_uuid()),
+  "link_relation_id" uuid PRIMARY KEY DEFAULT (gen_random_uuid()),
   "relation_id" int NOT NULL,
   "link_id" int NOT NULL,
   "type_link" text NOT NULL
