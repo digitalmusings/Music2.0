@@ -20,8 +20,8 @@ CREATE TABLE "submission" (
 
 CREATE TABLE "submission_history" (
   "submission_history_id" uuid PRIMARY KEY DEFAULT (gen_random_uuid()),
-  "date_update" timestamp NOT NULL,
-  "note_update" text NOT NULL,
+  "update_date" timestamp NOT NULL,
+  "update_note" text NOT NULL,
   "submission_id" int NOT NULL,
   "participant_id" int NOT NULL,
   "bracket_id" int NOT NULL,
