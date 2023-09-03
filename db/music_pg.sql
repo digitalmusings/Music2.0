@@ -3,7 +3,7 @@ CREATE TABLE "submission" (
   "participant_id" uuid NOT NULL,
   "bracket_id" uuid NOT NULL,
   "song_id" uuid NOT NULL,
-  "order" int NOT NULL,
+  "order" integer NOT NULL,
   "date_submitted" timestamp NOT NULL DEFAULT (now()),
   "active" bool NOT NULL,
   "is_dupe" bool NOT NULL,
@@ -26,7 +26,7 @@ CREATE TABLE "submission_history" (
   "participant_id" uuid NOT NULL,
   "bracket_id" uuid NOT NULL,
   "song_id" uuid NOT NULL,
-  "order" int NOT NULL,
+  "order" integer NOT NULL,
   "date_submitted" timestamp NOT NULL DEFAULT (now()),
   "active" bool NOT NULL,
   "is_dupe" bool NOT NULL,
@@ -62,8 +62,8 @@ CREATE TABLE "song" (
   "artist" text NOT NULL,
   "collaborator" text,
   "composer" text,
-  "year" int,
-  "year_alt" int
+  "year" integer,
+  "year_alt" integer
 );
 
 CREATE TABLE "song_relation" (
@@ -83,8 +83,8 @@ CREATE TABLE "song_artist" (
 CREATE TABLE "artist" (
   "artist_id" uuid PRIMARY KEY DEFAULT (gen_random_uuid()),
   "name" text NOT NULL,
-  "year_min" int,
-  "year_max" int,
+  "year_min" integer,
+  "year_max" integer,
   "primary_artist_id" uuid
 );
 
@@ -97,7 +97,7 @@ CREATE TABLE "artist_genre" (
 CREATE TABLE "participant" (
   "participant_id" uuid PRIMARY KEY DEFAULT (gen_random_uuid()),
   "username" text NOT NULL,
-  "discriminator" int NULL,
+  "discriminator" integer NULL,
   "nickname" text,
   "date_joined" timestamp NOT NULL DEFAULT (now()),
   "time_zone" text,
@@ -132,14 +132,14 @@ CREATE TABLE "song_genre" (
 
 CREATE TABLE "bracket" (
   "bracket_id" uuid PRIMARY KEY DEFAULT (gen_random_uuid()),
-  "epoch" int,
-  "cycle" int,
+  "epoch" integer,
+  "cycle" integer,
   "name" text,
   "type" text NOT NULL,
-  "year_min" int,
-  "year_max" int,
-  "order" int NOT NULL,
-  "size" int NOT NULL,
+  "year_min" integer,
+  "year_max" integer,
+  "order" integer NOT NULL,
+  "size" integer NOT NULL,
   "date_start" timestamp,
   "date_end" timestamp,
   "discord_message_id" text
@@ -154,8 +154,8 @@ CREATE TABLE "project" (
 CREATE TABLE "bracket_selection" (
   "bracket_selection_id" uuid PRIMARY KEY DEFAULT (gen_random_uuid()),
   "project_id" uuid NOT NULL,
-  "epoch" int NOT NULL,
-  "cycle" int NOT NULL,
+  "epoch" integer NOT NULL,
+  "cycle" integer NOT NULL,
   "bracket_id" uuid NOT NULL,
   "date_selected" timestamp NOT NULL
 );
@@ -163,7 +163,7 @@ CREATE TABLE "bracket_selection" (
 CREATE TABLE "seed" (
   "seed_id" uuid PRIMARY KEY DEFAULT (gen_random_uuid()),
   "bracket_id" uuid NOT NULL,
-  "seed" int NOT NULL,
+  "seed" integer NOT NULL,
   "submission_id" uuid NOT NULL,
   "emoji" text
 );
@@ -181,9 +181,9 @@ CREATE TABLE "round" (
   "round_id" uuid PRIMARY KEY DEFAULT (gen_random_uuid()),
   "bracket_id" uuid NOT NULL,
   "name" text NOT NULL,
-  "size" int NOT NULL,
-  "index_asc" int NOT NULL,
-  "index_desc" int NOT NULL,
+  "size" integer NOT NULL,
+  "index_asc" integer NOT NULL,
+  "index_desc" integer NOT NULL,
   "date_start" timestamp NOT NULL,
   "date_end" timestamp,
   "discord_message_id" text
@@ -192,7 +192,7 @@ CREATE TABLE "round" (
 CREATE TABLE "match" (
   "match_id" uuid PRIMARY KEY DEFAULT (gen_random_uuid()),
   "round_id" uuid NOT NULL,
-  "index" int NOT NULL,
+  "index" integer NOT NULL,
   "date_posted" timestamp NOT NULL,
   "tie" text,
   "winner_id" uuid,
@@ -206,8 +206,8 @@ CREATE TABLE "match_seed" (
   "match_seed_id" uuid PRIMARY KEY DEFAULT (gen_random_uuid()),
   "match_id" uuid NOT NULL,
   "seed_id" uuid NOT NULL,
-  "index" int NOT NULL,
-  "votes" int,
+  "index" integer NOT NULL,
+  "votes" integer,
   "voters" text[] NOT NULL,,
   "previous_match_id" uuid
 );
