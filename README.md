@@ -2,6 +2,8 @@
 The second generation of the #Music project, rebuilt soup to nuts and ready for
 you to implement yourself.
 
+[![license: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 ## Development
 
 ### pyenv
