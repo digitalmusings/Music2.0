@@ -1,0 +1,41 @@
+#!/bin/env bash
+
+usage() {
+cat << 'END'
+Music2.0 Development Commands
+
+USAGE
+  ./run [COMMAND] [options]
+
+COMMAND
+  server    run development server locally, access at 127.0.0.1:8080
+  lint      run black and isort
+  tests     run the full test suite
+
+END
+}
+
+command="$1"
+args="${@:2}"
+
+case $command in
+  server)
+    echo "Starting development server"
+    poetry run python -m music2.app $args
+    ;;
+  lint)
+    echo "Sorting imports and reformatting source files"
+    poetry run isort music2 tests
+    poetry run black music2 tests
+    ;;
+  tests)
+    echo "Running test suite"
+    poetry run pytest tests/ $args
+    ;;
+  *)
+    if [[ ! -z "$command" ]]; then
+      echo -e "Unrecognized command '$command'\n"
+    fi
+    usage
+    ;;
+esac
