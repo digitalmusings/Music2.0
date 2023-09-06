@@ -35,7 +35,16 @@ pyenv install
 ```
 
 See also the [`pyenv-installer`](https://github.com/pyenv/pyenv-installer)
-project for more help, if needed.
+project and the
+[pyenv wiki](https://github.com/pyenv/pyenv/wiki#suggested-build-environment)
+for more help, if needed. In particular, if you have trouble building Python,
+try first installing these build dependencies using `apt`
+
+```shell
+sudo apt update; sudo apt install build-essential libssl-dev zlib1g-dev \
+libbz2-dev libreadline-dev libsqlite3-dev curl libncursesw5-dev xz-utils \
+tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
+```
 
 ### poetry
 
@@ -59,7 +68,8 @@ development tasks. Execute `./run` without any arguments to see the full
 documentation.
 
 To test the server, `./run server`. This will run the development server, which
-can be accessed at `http://127.0.0.1:8080/`. Once running, you can test this by hitting it with curl:
+can be accessed at <http://127.0.0.1:8080/>. Once running, you can test this by
+hitting it with curl:
 
 ```shell
 curl http://127.0.0.1:8080/system/ping
