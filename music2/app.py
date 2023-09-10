@@ -1,5 +1,11 @@
 #!/bin/env python
 
+"""
+Small module to create the Flask app and register all the submodules.
+
+If executed directly, this module will start the dev server on port 8000.
+"""
+
 import flask
 
 from .api.system import routes as system_routes

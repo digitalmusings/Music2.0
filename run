@@ -9,6 +9,7 @@ USAGE
 
 COMMAND
   server    run development server locally, access at 127.0.0.1:8080
+  dbshell   open a psql prompt using the provided DB credentials
   lint      run black and isort
   tests     run the full test suite
 
@@ -16,12 +17,30 @@ END
 }
 
 command="$1"
-args="${@:2}"
+args=("${@:2}")
+
+export DB_HOST=${DB_HOST:-localhost}
+export DB_PORT=${DB_PORT:-5432}
+export DB_NAME=${DB_NAME:-music}
+
+# Use this to ensure the DB password is available for commands that need it
+_require_db_creds () {
+  if [[ -z "$DB_USER" || -z "$DB_PASSWORD" ]]; then
+    echo "DB_USER and DB_PASSWORD are required" && exit 1
+  fi
+}
+
 
 case $command in
   server)
+    _require_db_creds
     echo "Starting development server"
-    poetry run python -m music2.app $args
+    poetry run python -m music2.app "${args[@]}"
+    ;;
+  dbshell)
+    _require_db_creds
+    echo "Establishing db connection to postgresql://${DB_USER}:***@${DB_HOST}:${DB_PORT}/${DB_NAME}"
+    PGPASSWORD="$DB_PASSWORD" psql --host="$DB_HOST" --port="$DB_PORT" --username="$DB_USER" --dbname="$DB_NAME" "${args[@]}"
     ;;
   lint)
     echo "Sorting imports and reformatting source files"
@@ -29,8 +48,13 @@ case $command in
     poetry run black music2 tests
     ;;
   tests)
+    _require_db_creds
     echo "Running test suite"
-    poetry run pytest tests/ $args
+    poetry run pytest "${args[@]}"
+    ;;
+  tests_fast)
+    echo "Running test suite, excluding integration and db tests"
+    poetry run pytest -m "not (integration or db)" "${args[@]}"
     ;;
   *)
     if [[ ! -z "$command" ]]; then
