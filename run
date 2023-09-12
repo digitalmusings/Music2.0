@@ -20,6 +20,7 @@ END
 command="$1"
 args=("${@:2}")
 
+export DB_HOST_REMOTE=${DB_HOST_REMOTE:-musicdb.cpc6p0drvgxc.us-east-1.rds.amazonaws.com}
 export DB_HOST=${DB_HOST:-localhost}
 export DB_PORT=${DB_PORT:-5432}
 export DB_NAME=${DB_NAME:-music}
@@ -38,10 +39,15 @@ case $command in
     echo "Starting development server"
     poetry run python -m music2.app "${args[@]}"
     ;;
-  dbshell)
+  db_shell)
     _require_db_creds
     echo "Establishing db connection to postgresql://${DB_USER}:***@${DB_HOST}:${DB_PORT}/${DB_NAME}"
     PGPASSWORD="$DB_PASSWORD" psql --host="$DB_HOST" --port="$DB_PORT" --username="$DB_USER" --dbname="$DB_NAME" "${args[@]}"
+    ;;
+  db_tunnel)
+    host=${2:-$DB_HOST_REMOTE}
+    echo "Tunneling port 5432 to '$host'"
+    ssh -L 5432:"$host":5432 -N music.volfied.net
     ;;
   lint)
     echo "Sorting imports and reformatting source files"

@@ -78,7 +78,7 @@ def get_db_url(user, password, host=DEFAULT_HOST, port=DEFAULT_PORT, name=DEFAUL
 
 
 @functools.cache
-def get_db_engine():
+def get_db_engine(timeout=DB_CONNECT_TIMEOUT):
     """
     Return a SQLAlchemy DB engine using the configuration values.
 
@@ -96,7 +96,7 @@ def get_db_engine():
     """
 
     url = get_db_url(DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME)
-    return sqlalchemy.create_engine(url, connect_args={"connect_timeout": 10})
+    return sqlalchemy.create_engine(url, connect_args={"connect_timeout": timeout})
 
 
 @functools.cache
