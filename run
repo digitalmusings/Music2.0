@@ -9,7 +9,8 @@ USAGE
 
 COMMAND
   server      run development server locally, access at 127.0.0.1:8080
-  dbshell     open a psql prompt using the provided DB credentials
+  db_shell    open a psql prompt using the provided DB credentials
+  db_tunnel   open an SSH tunnel through music.volfied.net to the RDS instance
   lint        run black and isort
   tests       run the full test suite
   tests_fast  run only the quicker tests, excluding db and integration tests
