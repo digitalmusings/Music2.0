@@ -6,18 +6,34 @@ import re
 import json
 import os
 
+# Parse arguments, Pt 1
+arg_cnt = len(sys.argv)
+search_term = sys.argv[1]
+
 # Instantiate Genius and define search parameters
 genius = Genius(config('GENIUS_TOKEN'))
 genius.remove_section_headers = True
 genius.skip_non_songs = True
-genius.excluded_terms = [ "acoustic", "remix", "mix$", "live$", "live at", 
-                          "live in", "demo$", "version", "DVD", "edit$",
-                          "booklet", "album", "live from", "extended" ]
 
-# Parse arguments
-arg_cnt = len(sys.argv)
-search_term = sys.argv[1]
+exc_terms = [ "acoustic", "remix", "mix$", "live$", "live at", 
+              "live in", "demo$", "version", "DVD", "edit$",
+              "booklet", "album", "live from", "extended" ]
 
+# Grab existing song titles to add to exclusion list
+if os.path.isfile( 'lyrics.json' ):
+    with open( 'lyrics.json', 'r' ) as file:
+        artists = json.load( file )
+    titles = []
+    found_artist = next( ( artist for artist in artists if artist[ "artist" ] == search_term ), None )
+    if found_artist:
+        for s in found_artist[ "songs" ]:
+            titles.append( s["title"] )
+        for s in titles:
+            exc_terms.append( s )
+
+genius.excluded_terms = exc_terms
+
+# Parse argument, Pt 2
 if arg_cnt == 2: 
     artist = genius.search_artist( search_term )
 elif arg_cnt >= 3:
@@ -54,13 +70,18 @@ artist_dict = { 'artist': artist.name, 'songs': songs }
 # Save lyrics by artist to JSON file
 if not os.path.isfile( 'lyrics.json' ):
     with open( 'lyrics.json', 'w' ) as file:
-        file.write( '[]')
+        file.write( '[]' )
 
 with open( 'lyrics.json', 'r+' ) as file:
-        file_data = json.load( file )
-        file_data.append( artist_dict )
+        artists = json.load( file )
+        existing_artist = next( ( artist for artist in artists if artist[ "artist" ] == search_term ), None )
+        if existing_artist:
+            for s in artist_dict[ 'songs' ]:
+                existing_artist[ 'songs' ].append( s )
+        else:
+            artists.append( artist_dict )
         file.seek( 0 )
-        json.dump( file_data, file, indent = 4 )
+        json.dump( artists, file, indent = 4 )
 
 
 # Get just the lyrics
