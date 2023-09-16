@@ -5,10 +5,23 @@ import sys
 import re
 import json
 import os
+import argparse
 
-# Parse arguments, Pt 1
-arg_cnt = len(sys.argv)
-search_term = sys.argv[1]
+
+# Parse arguments
+parser = argparse.ArgumentParser(
+    prog='Jukebox',
+    description='Add new songs to brain',
+    epilog=''
+)
+parser.add_argument( 'artist', help = 'The artist to pull lyrics for' )
+parser.add_argument( '--max', '-m', type = int, help = 'The max number of songs to pull' )
+parser.add_argument( '--batch', '-b', 
+                     type = int, 
+                     default = 5, 
+                     help = 'How many songs to pull at a time' 
+)
+args = parser.parse_args()
 
 # Instantiate Genius and define search parameters
 genius = Genius(config('GENIUS_TOKEN'))
@@ -24,32 +37,35 @@ if os.path.isfile( 'lyrics.json' ):
     with open( 'lyrics.json', 'r' ) as file:
         artists = json.load( file )
     titles = []
-    found_artist = next( ( artist for artist in artists if artist[ "artist" ] == search_term ), None )
+    found_artist = next( ( artist for artist in artists if artist[ "artist" ] == args.artist ), None )
     if found_artist:
         for s in found_artist[ "songs" ]:
-            titles.append( s["title"] )
+            titles.append( re.escape( s["title"] ) )
         for s in titles:
             exc_terms.append( s )
-
 genius.excluded_terms = exc_terms
 
-# Parse argument, Pt 2
-if arg_cnt == 2: 
-    artist = genius.search_artist( search_term )
-elif arg_cnt >= 3:
-    search_max = int( sys.argv[2] )
-    artist = genius.search_artist( search_term, max_songs = search_max )
-else: 
-    sys.exit('Arguments: search_artist [max_songs]')
+# set pull variables
+batch_size = 5 if args.batch is None else args.batch
+remaining = 250 if args.max is None else args.max
 
-# Uncomment to save full output to disk.
-# artist.save_lyrics( overwrite = True )
 
-# Remove ads and insert missing periods at the end of each line
+# Start pulling the data in batches
 songs = []
-for s in artist.songs:
-    songs.append( 
-        {   'title': s.title,
+while remaining > 0: 
+    # Pull the data 
+    try:
+        batch = genius.search_artist( args.artist, max_songs = batch_size )
+        remaining -= batch_size
+        batch_size = min( [ remaining, batch_size ] )
+    except:
+        print( 'Error. Retrying batch.' )
+        continue
+
+    # Remove ads and insert missing periods at the end of each line
+    for s in batch.songs:
+        song_clean = {
+            'title': s.title,
             'lyrics': 
                 re.sub( r'(^.*Get tickets as low as.*$|^.*You might also like.*$|[0-9]*Embed$)', '',
                     re.sub( r'^.*$', '',
@@ -63,9 +79,14 @@ for s in artist.songs:
                     re.MULTILINE
                 )
         }
-    )
+        songs.append( song_clean )
+        exc_terms.append( re.escape( s.title ) )
+        genius.excluded_terms = exc_terms
 
-artist_dict = { 'artist': artist.name, 'songs': songs }
+# Uncomment to save full output to disk.
+# artist.save_lyrics( overwrite = True )
+
+artist_dict = { 'artist': batch.name, 'songs': songs }
 
 # Save lyrics by artist to JSON file
 if not os.path.isfile( 'lyrics.json' ):
@@ -74,7 +95,7 @@ if not os.path.isfile( 'lyrics.json' ):
 
 with open( 'lyrics.json', 'r+' ) as file:
         artists = json.load( file )
-        existing_artist = next( ( artist for artist in artists if artist[ "artist" ] == search_term ), None )
+        existing_artist = next( ( artist for artist in artists if artist[ "artist" ] == args.artist ), None )
         if existing_artist:
             for s in artist_dict[ 'songs' ]:
                 existing_artist[ 'songs' ].append( s )
@@ -84,6 +105,7 @@ with open( 'lyrics.json', 'r+' ) as file:
         json.dump( artists, file, indent = 4 )
 
 
+# Done looping. Finish up.
 # Get just the lyrics
 output = ''
 for s in songs:
