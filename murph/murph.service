@@ -1,0 +1,12 @@
+[Unit]
+Description=Murph
+
+[Service]
+User=murph
+WorkingDirectory=/home/murph/music
+ExecStart=/home/murph/.local/bin/poetry run python murph/murph.py
+Environment=PYENV_ROOT="$HOME/.pyenv"
+Environment=PATH="$PYENV_ROOT/bin:$PATH"
+Environment=PATH="$HOME/.local/bin:$PATH"
+[Install]
+WantedBy=multi-user.target
