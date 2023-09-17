@@ -20,7 +20,7 @@ intents.message_content = True
 
 client = discord.Client(intents=intents)
 
-brain = Brain('brain.brn')
+brain = Brain('murph/brain.brn')
 
 # UTILITY FUNCTIONS
 # Remove the first "trigger word" detected if string is beginning with it
