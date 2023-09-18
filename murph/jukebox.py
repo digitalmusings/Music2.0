@@ -58,6 +58,9 @@ while remaining > 0:
         batch = genius.search_artist( args.artist, max_songs = batch_size )
         remaining -= batch_size
         batch_size = min( [ remaining, batch_size ] )
+    except KeyboardInterrupt:
+        print( 'User cancelled. Quitting.')
+        sys.exit()
     except:
         print( 'Error. Retrying batch.' )
         continue
@@ -69,9 +72,12 @@ while remaining > 0:
             'lyrics': 
                 re.sub( r'(^.*Get tickets as low as.*$|^.*You might also like.*$|[0-9]*Embed$)', '',
                     re.sub( r'^.*$', '',
-                        s.lyrics.replace( '\n\n', '\n' )
-                            .replace( '\n', '.\n' )
-                            .replace( '..', '.' ),
+                        re.sub( r'((\?|,|!|\.))\.$', '\1',
+                            s.lyrics.replace( '\n\n', '\n' )
+                                .replace( '\n', '.\n' ),
+                            0,
+                            re.MULTILINE
+                        ),
                         1,
                         re.MULTILINE
                     ),
