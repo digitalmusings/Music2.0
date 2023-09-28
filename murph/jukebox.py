@@ -1,4 +1,5 @@
 from lyricsgenius import Genius
+from lyricsgenius.utils import clean_str
 from cobe.brain import Brain
 from decouple import config
 import sys
@@ -28,11 +29,12 @@ genius = Genius(config('GENIUS_TOKEN'))
 genius.remove_section_headers = True
 genius.skip_non_songs = True
 
-exc_terms = [ "acoustic", "remix", "mix$", "live$", "live at", 
-              "live in", "demo$", "version", "DVD", "edit$",
-              "booklet", "album", "live from", "extended" ]
+exc_terms = [ 'acoustic', 'remix', 'mix$', 'live$', 'live at', 
+              'live in', 'demo$', 'version', 'DVD', 'edit$',
+              'booklet', 'album', 'live from', 'extended' ]
 
 # Grab existing song titles to add to exclusion list
+# pattern = re.compile( '([\[\]$&+,:;=?@#\'<>.^*()%!-])' )
 if os.path.isfile( 'lyrics.json' ):
     with open( 'lyrics.json', 'r' ) as file:
         artists = json.load( file )
@@ -40,9 +42,11 @@ if os.path.isfile( 'lyrics.json' ):
     found_artist = next( ( artist for artist in artists if artist[ "artist" ] == args.artist ), None )
     if found_artist:
         for s in found_artist[ "songs" ]:
-            titles.append( re.escape( s["title"] ) )
+            # titles.append( re.sub( pattern, r'\\\1', s["title"] ) )
+            titles.append( clean_str( s['title'] ) )
         for s in titles:
             exc_terms.append( s )
+        print( titles )
 genius.excluded_terms = exc_terms
 
 # set pull variables
