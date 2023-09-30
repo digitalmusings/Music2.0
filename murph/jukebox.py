@@ -1,7 +1,6 @@
 from lyricsgenius import Genius
 from lyricsgenius.utils import clean_str
 from cobe.brain import Brain
-from decouple import config
 import sys
 import re
 import json
@@ -25,7 +24,7 @@ parser.add_argument( '--batch', '-b',
 args = parser.parse_args()
 
 # Instantiate Genius and define search parameters
-genius = Genius(config('GENIUS_TOKEN'))
+genius = Genius(os.environ.get('GENIUS_TOKEN'))
 genius.remove_section_headers = True
 genius.skip_non_songs = True
 
