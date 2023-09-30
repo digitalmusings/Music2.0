@@ -8,9 +8,6 @@ The submission_history table is a log of any changes made to the submissions,
 either by the user via a command or by an admin.
 """
 
-import datetime
-import uuid
-
 import sqlalchemy
 from sqlalchemy import orm
 
@@ -23,13 +20,11 @@ class Submission(base.Base):
     __tablename__ = "submission"
 
     submission_id: orm.Mapped[base.pk]
-    participant_id: orm.Mapped[uuid.UUID]
-    bracket_id: orm.Mapped[uuid.UUID]
-    song_id: orm.Mapped[uuid.UUID]
+    participant_id: orm.Mapped[base.fk]
+    bracket_id: orm.Mapped[base.fk]
+    song_id: orm.Mapped[base.fk]
     order: orm.Mapped[int]
-    date_submitted: orm.Mapped[datetime.datetime] = orm.mapped_column(
-        server_default=sqlalchemy.text("now()")
-    )
+    date_submitted: orm.Mapped[base.datetime_now]
     active: orm.Mapped[bool]
     is_dupe: orm.Mapped[bool]
     title: orm.Mapped[str]
@@ -60,9 +55,7 @@ class SubmissionHistory(base.Base):
 
     # These are specific to the submission_history log
     submission_history_id: orm.Mapped[base.pk]
-    update_date: orm.Mapped[datetime.datetime] = orm.mapped_column(
-        server_default=sqlalchemy.text("now()")
-    )
+    update_date: orm.Mapped[base.datetime_now]
     update_note: orm.Mapped[str] = orm.mapped_column(
         comment='dupe ineligible withdrawn "play-in loser"'
     )
@@ -73,9 +66,7 @@ class SubmissionHistory(base.Base):
     bracket_id: orm.Mapped[base.fk]
     song_id: orm.Mapped[base.fk]
     order: orm.Mapped[int]
-    date_submitted: orm.Mapped[datetime.datetime] = orm.mapped_column(
-        server_default=sqlalchemy.text("now()")
-    )
+    date_submitted: orm.Mapped[base.datetime_now]
     active: orm.Mapped[bool]
     is_dupe: orm.Mapped[bool]
     title: orm.Mapped[str]

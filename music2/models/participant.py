@@ -26,9 +26,7 @@ class Participant(base.Base):
     username: orm.Mapped[str]
     discriminator: orm.Mapped[int | None]
     nickname: orm.Mapped[str | None] = orm.mapped_column(comment="CALCULATED")
-    date_joined: orm.Mapped[datetime.datetime] = orm.mapped_column(
-        server_default=sqlalchemy.text("now()")
-    )
+    date_joined: orm.Mapped[base.datetime_now]
     time_zone: orm.Mapped[str | None]
     active: orm.Mapped[bool]
 
@@ -39,9 +37,7 @@ class ParticipantNickname(base.Base):
     participant_nickname_id: orm.Mapped[base.pk]
     participant_id: orm.Mapped[base.fk]
     nickname: orm.Mapped[str]
-    date_start: orm.Mapped[datetime.datetime] = orm.mapped_column(
-        server_default=sqlalchemy.text("now()")
-    )
+    date_start: orm.Mapped[base.datetime_now]
     date_end: orm.Mapped[datetime.datetime | None]
 
     __table_args__ = (

@@ -8,8 +8,11 @@ Also included are the following conveniences:
 - pk - Annotated type wrapper for UUID for use as a primary key, specifies
     default behaviors
 - fk - Annotated type wrapper for UUID for use as an indexed foreign key
+- datetime_now - Annotated type wrapper for datetime that sets the server
+    default to `now()`
 """
 
+import datetime
 import typing
 import uuid
 
@@ -31,6 +34,11 @@ pk = typing.Annotated[
 
 # UUID to use when you want an index on your FK
 fk = typing.Annotated[uuid.UUID, orm.mapped_column(index=True)]
+
+# datetime that defaults to now()
+datetime_now = typing.Annotated[
+    datetime.datetime, orm.mapped_column(server_default=sqlalchemy.text("now()"))
+]
 
 
 class Base(orm.DeclarativeBase):
