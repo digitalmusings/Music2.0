@@ -6,6 +6,7 @@ import re
 import json
 import os
 import argparse
+from decouple import config
 
 
 # Parse arguments
@@ -24,7 +25,7 @@ parser.add_argument( '--batch', '-b',
 args = parser.parse_args()
 
 # Instantiate Genius and define search parameters
-genius = Genius(os.environ.get('GENIUS_TOKEN'))
+genius = Genius(config('GENIUS_TOKEN'))
 genius.remove_section_headers = True
 genius.skip_non_songs = True
 

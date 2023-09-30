@@ -4,16 +4,17 @@ import discord
 from random import randint
 from cobe.brain import Brain
 import os
+from decouple import config
 
-BOT_TOKEN = os.environ.get("BOT_TOKEN")
-TRIGGER_ENABLED = bool(os.environ.get("TRIGGER_ENABLED"))
-TRIGGER_WORDS = [x.lower() for x in os.environ.get("TRIGGER_WORDS").split(",")]
-CHAT_ALLOWLIST = os.environ.get("CHAT_ALLOWLIST").split(",")
-RANDOM_ENABLED = bool(os.environ.get("RANDOM_ENABLED"))
-RANDOM_RATIO = os.environ.get("RANDOM_RATIO")
-PRIVATE_REPLY_ENABLED = bool(os.environ.get("PRIVATE_REPLY_ENABLED"))
-BLOCKLIST_WORDS = os.environ.get("BLOCKLIST_WORDS").split(",")
-LEARN_ENABLED = bool(os.environ.get("LEARN_ENABLED"))
+BOT_TOKEN = config("BOT_TOKEN")
+TRIGGER_ENABLED = bool(config("TRIGGER_ENABLED"))
+TRIGGER_WORDS = [x.lower() for x in config("TRIGGER_WORDS").split(",")]
+CHAT_ALLOWLIST = config("CHAT_ALLOWLIST").split(",")
+RANDOM_ENABLED = bool(config("RANDOM_ENABLED"))
+RANDOM_RATIO = config("RANDOM_RATIO")
+PRIVATE_REPLY_ENABLED = bool(config("PRIVATE_REPLY_ENABLED"))
+BLOCKLIST_WORDS = config("BLOCKLIST_WORDS").split(",")
+LEARN_ENABLED = bool(config("LEARN_ENABLED"))
 
 intents = discord.Intents.default()
 intents.message_content = True
