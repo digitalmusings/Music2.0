@@ -1,7 +1,6 @@
 import argparse
-from decouple import config
 import discogs_client
-# import os
+import os
 
 # Parse arguments
 parser = argparse.ArgumentParser(
@@ -13,8 +12,7 @@ args = parser.parse_args()
 
 
 disc = discogs_client.Client("#Music2.0/0.1")
-disc.set_consumer_key(config("DISCOGS_KEY"), config("DISCOGS_SECRET"))
-# disc.set_consumer_key(os.environ.get("DISCOGS_KEY"), os.environ.get("DISCOGS_SECRET"))
+disc.set_consumer_key(os.environ.get("DISCOGS_KEY"), os.environ.get("DISCOGS_SECRET"))
 
 results = disc.search(args.search, type=args.type)
 
