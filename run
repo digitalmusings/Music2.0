@@ -8,12 +8,18 @@ USAGE
   ./run [COMMAND] [options]
 
 COMMAND
-  server      run development server locally, access at 127.0.0.1:8080
-  db_shell    open a psql prompt using the provided DB credentials
-  db_tunnel   open an SSH tunnel through music.volfied.net to the RDS instance
-  lint        run black and isort
-  tests       run the full test suite
-  tests_fast  run only the quicker tests, excluding db and integration tests
+  server        run development server locally, access at 127.0.0.1:8080
+  db_shell      open a psql prompt using the provided DB credentials
+  db_tunnel     open an SSH tunnel through music.volfied.net to the RDS instance
+  alembic_auto  autogenerate a new alembic migration based on ORM changes
+  alembic_empty create a new empty alembic migration file
+  alembic_run   upgrade (or downgrade) the db to a new alembic migration
+                set DIRECTION to 'downgrade' for reverse migrations
+                if no revision is specified, defaults to 'head' for upgrade or
+                '-1' for downgrade
+  lint          run black and isort
+  tests         run the full test suite
+  tests_fast    run only the quicker tests, excluding db and integration tests
 
 END
 }
@@ -33,7 +39,6 @@ _require_db_creds () {
   fi
 }
 
-
 case $command in
   server)
     _require_db_creds
@@ -49,6 +54,33 @@ case $command in
     host=${2:-$DB_HOST_REMOTE}
     echo "Tunneling port 5432 to '$host'"
     ssh -L 5432:"$host":5432 -N music.volfied.net
+    ;;
+  alembic_auto)
+    echo "Autogenerating new alembic migration"
+    read -p "Enter migration message: " message
+    poetry run alembic revision --autogenerate -m "$message" "${args[@]}"
+    ;;
+  alembic_empty)
+    echo "Generating new empty alembic migration"
+    read -p "Enter migration message: " message
+    poetry run alembic revision -m "$message" "${args[@]}"
+    ;;
+  alembic_run)
+    direction=${DIRECTION:-upgrade}
+    pattern='^(up|down)grade$'
+    if [[ ! "$direction" =~ $pattern ]]; then
+      echo "DIRECTION variable must be one of 'upgrade' (default) or 'downgrade'" && exit 1
+    fi
+    # If no further arguments are supplied, default to 'head'
+    if [ ${#args[@]} -eq 0 ]; then
+      if [[ "$direction" = "upgrade" ]]; then
+        args=("head")
+      else
+        args=("-1")
+      fi
+    fi
+    echo "Running alembic $direction ${args[@]}"
+    poetry run alembic "$direction" "${args[@]}"
     ;;
   lint)
     echo "Sorting imports and reformatting source files"
