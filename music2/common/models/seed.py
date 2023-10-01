@@ -15,7 +15,7 @@ import uuid
 import sqlalchemy
 from sqlalchemy import orm
 
-from music2.models import base
+from music2.common.models import base
 
 __all__ = ("Seed", "SeedHistory")
 
@@ -40,15 +40,15 @@ class Seed(base.Base):
     )
 
 
-class SubmissionHistory(base.Base):
-    __tablename__ = "submission_history"
+class SeedHistory(base.Base):
+    __tablename__ = "seed_history"
 
-    # These are specific to the submission_history log
+    # These are specific to the seed_history log
     seed_history_id: orm.Mapped[base.pk]
     update_date: orm.Mapped[base.datetime_now]
     update_note: orm.Mapped[str] = orm.mapped_column(comment='"missed dupe" ineligible')
 
-    # These just duplicate the data from the submission row
+    # These just duplicate the data from the seed row
     seed_id: orm.Mapped[base.fk]
     submission_id: orm.Mapped[base.fk]
     emoji: orm.Mapped[str]

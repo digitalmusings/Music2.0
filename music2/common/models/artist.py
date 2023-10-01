@@ -13,7 +13,7 @@ artist_genre table.
 import sqlalchemy
 from sqlalchemy import orm
 
-from music2.models import base
+from music2.common.models import base
 
 __all__ = ("Artist", "ArtistGenre")
 
@@ -25,7 +25,7 @@ class Artist(base.Base):
     name: orm.Mapped[str]
     year_min: orm.Mapped[int | None]
     year_max: orm.Mapped[int | None]
-    primary_artist_id: orm.Mapped[base.fk]
+    primary_artist_id: orm.Mapped[base.fk | None]
 
     __table_args__ = (
         sqlalchemy.ForeignKeyConstraint(

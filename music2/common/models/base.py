@@ -44,6 +44,7 @@ datetime_now = typing.Annotated[
 class Base(orm.DeclarativeBase):
     type_annotation_map = {
         str: sqlalchemy.Text,
+        list[str]: mutable.MutableList.as_mutable(postgresql.ARRAY(sqlalchemy.Text)),
     }
 
     @classmethod

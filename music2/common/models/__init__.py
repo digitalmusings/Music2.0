@@ -8,6 +8,7 @@ from .artist import *
 from .base import *
 from .bracket import *
 from .genre import *
+from .link import *
 from .match import *
 from .notification import *
 from .participant import *

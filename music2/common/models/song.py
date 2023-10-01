@@ -32,7 +32,7 @@ table.
 import sqlalchemy
 from sqlalchemy import orm
 
-from music2.models import base
+from music2.common.models import base
 
 __all__ = ("Song", "SongArtist", "SongGenre", "SongRelation")
 
