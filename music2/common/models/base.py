@@ -19,6 +19,7 @@ import uuid
 import sqlalchemy
 from sqlalchemy import orm, schema
 from sqlalchemy.dialects import postgresql
+from sqlalchemy.ext import mutable
 
 __all__ = ("Base",)
 
@@ -46,6 +47,20 @@ class Base(orm.DeclarativeBase):
         str: sqlalchemy.Text,
         list[str]: mutable.MutableList.as_mutable(postgresql.ARRAY(sqlalchemy.Text)),
     }
+    metadata = sqlalchemy.MetaData(
+        naming_convention={
+            # Primary key
+            "pk": "%(table_name)s_pkey",
+            # Unique constraint
+            "uq": "%(table_name)s_%(column_0_N_name)s_key",
+            # Check constraint
+            "ck": "%(table_name)s_%(column_0_N_name)s_check",
+            # Foreign key constraint
+            "fk": "%(table_name)s_%(column_0_name)s_fkey",
+            # Index
+            "ix": "%(table_name)s_%(column_0_N_name)s_idx",
+        },
+    )
 
     @classmethod
     def _create_table(cls):

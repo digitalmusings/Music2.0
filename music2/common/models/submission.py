@@ -33,9 +33,9 @@ class Submission(base.Base):
     collaborators: orm.Mapped[str | None]
     composers: orm.Mapped[str | None]
     link: orm.Mapped[str]
-    genre: orm.Mapped[str]
-    emoji: orm.Mapped[str]
-    comments: orm.Mapped[str]
+    genre: orm.Mapped[str | None]
+    emoji: orm.Mapped[str | None]
+    comments: orm.Mapped[str | None]
 
     __table_args__ = (
         sqlalchemy.ForeignKeyConstraint(
@@ -75,9 +75,9 @@ class SubmissionHistory(base.Base):
     collaborators: orm.Mapped[str | None]
     composers: orm.Mapped[str | None]
     link: orm.Mapped[str]
-    genre: orm.Mapped[str]
-    emoji: orm.Mapped[str]
-    comments: orm.Mapped[str]
+    genre: orm.Mapped[str | None]
+    emoji: orm.Mapped[str | None]
+    comments: orm.Mapped[str | None]
 
     __table_args__ = (
         sqlalchemy.ForeignKeyConstraint(

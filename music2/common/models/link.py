@@ -21,7 +21,7 @@ class Link(base.Base):
 
     link_id: orm.Mapped[base.pk]
     url: orm.Mapped[str]
-    region: orm.Mapped[list[str]] = orm.mapped_column(
+    region: orm.Mapped[list[str] | None] = orm.mapped_column(
         comment=(
             'US Canada Japan Australia Europe Asia "North America" "South America"'
             " Africa Worldwide"
