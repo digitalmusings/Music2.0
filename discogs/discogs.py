@@ -29,19 +29,38 @@ results = sorted(results, key = lambda x: (int(x.data['year']) if 'year' in x.da
                                            0 - x.data['community']['want'] - x.data['community']['have']))
 
 if results:
+    release_arr = []
+    single_year = 9999
     for result in results:
         release = disc.master(result.data['id'])
         if any(track.title.lower() == args.track.lower() for track in release.tracklist):
-            track = [track.title for track in release.tracklist if track.title.lower() == args.track.lower()][0]
-            print('track', track)
-            break
-    if release:
-        for key, value in release.data.items():
-            if key in ['title', 'format', 'year', 'country']:
-                print(key, value)
-        print('formats', result.data['format'])
-        print('country', result.data['country'])
+            if len(release_arr) == 0:
+                rls = { 'release': release, 'result': result }
+                release_arr.append(rls)
+                if 'Single' in result.data['format']:
+                    single_year = int(release.year)
+                else:
+                    break
+            elif 'Single' not in result.data['format']:
+                if ( single_year != 9999 and 'Compilation' not in result.data['format'] 
+                    ) or ( single_year == 9999 and 'Compilation' in result.data['format'] ):
+                    rls = { 'release': release, 'result': result }
+                    release_arr.append(rls)
+                    break
+            elif int(release.year) - single_year > 5:
+                break
     else:
         print("No release found")
 else:
     print("No results found")
+
+
+for idx, rls in enumerate(release_arr):
+    track = [track.title for track in rls['release'].tracklist if track.title.lower() == args.track.lower()][0]
+    if idx == 0:
+        print(track)
+    print('------------------')
+    line_1 = rls['release'].data['title'] + ' (' + str(rls['release'].data['year']) + ') ' + rls['result'].data['country']
+    line_2 = rls['result'].data['format']
+    print(line_1)
+    print(line_2)
