@@ -57,7 +57,7 @@ class SongRelation(base.Base):
     song_relation_id: orm.Mapped[base.pk]
     parent_song_id: orm.Mapped[base.fk]
     child_song_id: orm.Mapped[base.fk]
-    song_relation_type: orm.Mapped[str] = orm.mapped_column(comment="cover live")
+    song_relation_type: orm.Mapped[str] = orm.mapped_column(comment="cover live alternate")
 
     __table_args__ = (
         sqlalchemy.ForeignKeyConstraint(
