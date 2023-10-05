@@ -42,7 +42,7 @@ import functools
 import os
 
 import sqlalchemy
-import sqlalchemy.orm
+from sqlalchemy import orm
 
 from music2.common.exceptions import ConfigError
 
@@ -96,7 +96,9 @@ def get_db_engine(timeout=DB_CONNECT_TIMEOUT):
     """
 
     url = get_db_url(DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME)
-    return sqlalchemy.create_engine(url, connect_args={"connect_timeout": timeout})
+    return sqlalchemy.create_engine(
+        url, connect_args={"connect_timeout": timeout, "options": "-c timezone=utc"}
+    )
 
 
 @functools.cache
@@ -113,4 +115,4 @@ def get_db_session():
     """
 
     engine = get_db_engine()
-    return sqlalchemy.orm.Session(engine)
+    return orm.Session(engine)
