@@ -419,7 +419,10 @@ def upgrade() -> None:
         sa.Column("parent_song_id", sa.Uuid(), nullable=False),
         sa.Column("child_song_id", sa.Uuid(), nullable=False),
         sa.Column(
-            "song_relation_type", sa.Text(), nullable=False, comment="cover live"
+            "song_relation_type",
+            sa.Text(),
+            nullable=False,
+            comment="cover live alternate",
         ),
         sa.ForeignKeyConstraint(
             ["child_song_id"],
