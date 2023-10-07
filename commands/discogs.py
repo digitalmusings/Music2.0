@@ -1,7 +1,6 @@
 import argparse
 import discogs_client
 from decouple import config
-import operator
 
 # Parse arguments
 parser = argparse.ArgumentParser(
